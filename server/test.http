@@ -1,0 +1,14 @@
+### Create a study session
+POST http://localhost:5000/api/sessions
+Content-Type: application/json
+
+{
+  "course": "Personal Project",
+  "duration": 120,
+  "topics": "Produced the server and implemented full-stack",
+  "notes": "I feel lost but its interesting",
+  "productivity": 4
+}
+
+### List all sessions
+GET http://localhost:5000/api/sessions
