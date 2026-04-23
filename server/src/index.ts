@@ -5,7 +5,12 @@ import dotenv from 'dotenv';
 import sessionsRouter from './routes/sessions';
 
 dotenv.config();
+/*
+runs our express app.
+launches the server and env
+MongoDB connection.
 
+ */
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
