@@ -15,7 +15,7 @@ type Session = {
   productivity?: number;
 };
 
-const API_URL = 'http://localhost:5000/api/sessions'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/sessions'
 
 function App() {
   const [sessions, setSessions] = useState<Session[]>([])
