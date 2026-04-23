@@ -58,7 +58,10 @@ function App() {
     setTopics('')
     setConfidence('3')
   }
-
+  const handleDelete = (id: number) => {
+    // call setSessions with the array filtered to exclude this id
+    setSessions( sessions.filter(session => session.id !== id))
+  };
   return (
       <div>
         <h1>Study Tracker</h1>
@@ -100,6 +103,7 @@ function App() {
               <p>Time worked: {session.duration} min</p>
               <p>Topics: {session.topics}</p>
               <p>Confidence: {session.confidence}</p>
+              <button onClick={() => handleDelete(session.id)}>Delete</button>
             </div>
         ))}
       </div>
