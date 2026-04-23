@@ -1,67 +1,81 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 /*
-create a session type with values required
+The Session type — now matches what the backend returns
+Backend uses _id (MongoDB), not id
  */
 type Session = {
-  id: number;
+  _id: string;
   course: string;
   duration: number;
   topics: string;
-  confidence : number;
+  notes?: string;
+  date?: string;
+  productivity?: number;
 };
 
-/*
-Initiated a couple sessions
- */
-
-const initialSessions: Session[] = [
-  {id: 1, course: 'Data Structures & Algorithm', duration: 35, topics: 'Binary Trees', confidence:3},
-  {id: 2, course: 'Personal Project', duration: 45, topics: 'Frontend Development', confidence:4},
-  {id: 3, course: 'Engineering economics', duration: 45, topics: 'Taxation', confidence:5}
-];
-
-
-
-/*
-Component that makes the app work
-handles state and form fields
-handles adding, displaying and deleting sessions
- */
+const API_URL = 'http://localhost:5000/api/sessions'
 
 function App() {
-  // State: the list of sessions
-  const [sessions, setSessions] = useState<Session[]>(initialSessions)
+  const [sessions, setSessions] = useState<Session[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // State: the form fields
+  // Form state
   const [course, setCourse] = useState('')
   const [duration, setDuration] = useState('')
   const [topics, setTopics] = useState('')
-  const [confidence, setConfidence] = useState('5')
+  const [productivity, setProductivity] = useState('3')
 
+  // Fetch sessions when the component first mounts
+  useEffect(() => {
+    fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          setSessions(data)
+          setLoading(false)
+        })
+        .catch(err => {
+          console.error('Failed to fetch sessions:', err)
+          setLoading(false)
+        })
+  }, [])
 
-  // Runs when the user clicks "Add Session"
-  const handleAdd = () => {
-    const newSession: Session = {
-      id: Date.now(),
-      course: course,
-      duration: Number(duration),
-      topics: topics,
-      confidence: Number(confidence),
+  const handleAdd = async () => {
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          course,
+          duration: Number(duration),
+          topics,
+          productivity: Number(productivity),
+        }),
+      })
+      const saved = await res.json()
+      setSessions([saved, ...sessions])
+
+      setCourse('')
+      setDuration('')
+      setTopics('')
+      setProductivity('3')
+    } catch (err) {
+      console.error('Failed to add session:', err)
     }
-    setSessions([newSession, ...sessions])
-
-    // Reset the form fields
-    setCourse('')
-    setDuration('')
-    setTopics('')
-    setConfidence('3')
   }
-  const handleDelete = (id: number) => {
-    // call setSessions with the array filtered to exclude this id
-    setSessions( sessions.filter(session => session.id !== id))
-  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+      setSessions(sessions.filter(session => session._id !== id))
+    } catch (err) {
+      console.error('Failed to delete session:', err)
+    }
+  }
+
+  if (loading) return <p>Loading...</p>
+
   return (
       <div>
         <h1>Study Tracker</h1>
@@ -85,29 +99,32 @@ function App() {
               onChange={(e) => setTopics(e.target.value)}
           />
           <input
-              placeholder="Confidence (1-5)"
+              placeholder="Productivity (1-5)"
               type="number"
               min="1"
               max="5"
-              value={confidence}
-              onChange={(e) => setConfidence(e.target.value)}
+              value={productivity}
+              onChange={(e) => setProductivity(e.target.value)}
           />
           <button onClick={handleAdd}>Add Session</button>
         </div>
 
-
         <h2>Sessions</h2>
-        {sessions.map(session => (
-            <div key={session.id}>
-              <h3>Course: {session.course}</h3>
-              <p>Time worked: {session.duration} min</p>
-              <p>Topics: {session.topics}</p>
-              <p>Confidence: {session.confidence}</p>
-              <button onClick={() => handleDelete(session.id)}>Delete</button>
-            </div>
-        ))}
+        {sessions.length === 0 ? (
+            <p>No sessions yet. Add your first one above.</p>
+        ) : (
+            sessions.map(session => (
+                <div key={session._id}>
+                  <h3>Course: {session.course}</h3>
+                  <p>Time worked: {session.duration} min</p>
+                  <p>Topics: {session.topics}</p>
+                  {session.productivity && <p>Productivity: {session.productivity}/5</p>}
+                  <button onClick={() => handleDelete(session._id)}>Delete</button>
+                </div>
+            ))
+        )}
       </div>
-  );
+  )
 }
 
 export default App
