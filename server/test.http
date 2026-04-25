@@ -1,14 +1,62 @@
-### Create a study session
+### ───────────────────────────────────────────────
+### COURSES
+### ───────────────────────────────────────────────
+
+### Create a course
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+
+{
+  "code": "COEN 352",
+  "name": "Data Structures and Algorithms",
+  "semester": "Fall 2026",
+  "targetHours": 5
+}
+
+### List all courses
+GET http://localhost:5000/api/courses
+
+
+### ───────────────────────────────────────────────
+### TASKS
+### ───────────────────────────────────────────────
+
+### Create a task — REPLACE COURSE_ID with a real id from the response above
+POST http://localhost:5000/api/tasks
+Content-Type: application/json
+
+{
+  "courseId": "69ec23c47f80684c248e5eee",
+  "type": "assignment",
+  "title": "Assignment 3: Hash Tables",
+  "estimatedHours": 4,
+  "status": "not-started"
+}
+
+### List all tasks
+GET http://localhost:5000/api/tasks
+
+### List tasks for a specific course — REPLACE COURSE_ID
+GET http://localhost:5000/api/tasks?courseId=COURSE_ID
+
+
+### ───────────────────────────────────────────────
+### SESSIONS
+### ───────────────────────────────────────────────
+
+### Create a session linked to a course — REPLACE COURSE_ID
 POST http://localhost:5000/api/sessions
 Content-Type: application/json
 
 {
-  "course": "Personal Project",
-  "duration": 120,
-  "topics": "Produced the server and implemented full-stack",
-  "notes": "I feel lost but its interesting",
+  "courseId": "69ec23c47f80684c248e5eee",
+  "duration": 90,
+  "topics": "Hash table chaining vs open addressing",
   "productivity": 4
 }
 
 ### List all sessions
 GET http://localhost:5000/api/sessions
+
+### List sessions for a specific course — REPLACE COURSE_ID
+GET http://localhost:5000/api/sessions?courseId=COURSE_ID
