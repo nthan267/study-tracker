@@ -12,7 +12,7 @@ export interface IStudySession extends Document {
     topics: string;
     notes?: string;
     date?: Date;
-    confidence?: number;
+    productivity?: number;
 
 }
 
@@ -26,7 +26,7 @@ const StudySessionSchema: Schema = new Schema(
         topics: { type: String, required: true },
         notes: { type: String, default: '' },
         date: { type: Date, default: Date.now },
-        confidence: { type: Number, min: 1, max: 5 },
+        productivity: { type: Number, min: 1, max: 5 },
     },
     { timestamps: true }
 
